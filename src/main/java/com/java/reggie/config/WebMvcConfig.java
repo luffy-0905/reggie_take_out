@@ -35,7 +35,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         log.info("开始拦截请求");
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")//拦截所有请求，包括静态资源
-                .excludePathPatterns("/employee/login","/employee/logout","/backend/**","/front/**");//放行的请求
+                .excludePathPatterns("/employee/login","/employee/logout","/backend/**","/front/**","/user/sendMsg","/user/login");//放行的请求
     }
 
     /**

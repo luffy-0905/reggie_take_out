@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 套餐管理
@@ -84,5 +85,20 @@ public class SetmealController {
         log.info("ids:{}",ids);
         setmealService.deleteSetmealAndDish(ids);
         return R.success("删除成功");
+    }
+
+    /**
+     * 根据条件查询套餐数据
+     * @param setmeal
+     * @return
+     */
+    @GetMapping("/list")
+    public R<List<Setmeal>> list(Setmeal setmeal){
+        LambdaQueryWrapper<Setmeal> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId()!=null,Setmeal::getCategoryId,setmeal.getCategoryId())
+                .eq(setmeal.getStatus()!=null,Setmeal::getStatus,1)
+                .orderByDesc(Setmeal::getUpdateTime);
+        List<Setmeal> setmealList = setmealService.list(queryWrapper);
+        return R.success(setmealList);
     }
 }

@@ -74,15 +74,18 @@ public class CategoryController {
     /**
      * 根据条件查询分类数据(这里type已经固定，前端已经写死为1和2)
      *
-     * @param type
+     * @param category
      * @return
      */
     @GetMapping("/list")
-    public R<List<Category>> list(int type) {//也可直接用实体类category获取
+    public R<List<Category>> list(Category category) {//也可直接用实体类category获取
+        //条件构造器
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Category::getType, type)
-                .orderByAsc(Category::getSort)
-                .orderByDesc(Category::getUpdateTime);
+        //添加条件
+        queryWrapper.eq(category.getType() != null,Category::getType,category.getType());
+        //添加排序条件
+        queryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
+
         List<Category> list = categoryService.list(queryWrapper);
         return R.success(list);
     }

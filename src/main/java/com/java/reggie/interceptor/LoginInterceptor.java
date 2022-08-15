@@ -27,6 +27,14 @@ public class LoginInterceptor implements HandlerInterceptor {
             //放行
             return true;
         }
+        //这是移动端判断登录
+        if(session.getAttribute("user")!=null){
+            //动态设置id
+            Long userId = (Long) session.getAttribute("user");
+            BaseContext.setCurrentId(userId);
+            //放行
+            return true;
+        }
         //没有登录就返回未登录结果，通过输出流向客户端页面响应数据
         response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
         return false;
