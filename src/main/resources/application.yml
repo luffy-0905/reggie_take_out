@@ -14,8 +14,7 @@ spring:
     port: 6379
     timeout: 5000
     password: 524524
-    client-type: jedis
-    database: 0
+    database: 1
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
