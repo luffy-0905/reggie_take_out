@@ -108,4 +108,15 @@ public class SetmealController {
         List<Setmeal> setmealList = setmealService.list(queryWrapper);
         return R.success(setmealList);
     }
+
+    /**
+     *回显套餐数据和套餐对应的菜品数据
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    public R<Setmeal> get(@PathVariable Long id){
+        log.info("id:{}",id);
+        return null;
+    }
 }

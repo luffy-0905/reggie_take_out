@@ -1,22 +1,22 @@
 package com.java.reggie.controller;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.java.reggie.common.CustomException;
 import com.java.reggie.common.R;
 import com.java.reggie.dto.DishDto;
-import com.java.reggie.entity.Category;
-import com.java.reggie.entity.Dish;
-import com.java.reggie.entity.DishFlavor;
-import com.java.reggie.service.CategoryService;
-import com.java.reggie.service.DishFlavorService;
-import com.java.reggie.service.DishService;
+import com.java.reggie.entity.*;
+import com.java.reggie.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +34,6 @@ public class DishController {
     private CategoryService categoryService;
     @Autowired
     private RedisTemplate redisTemplate;
-
     /**
      * 新增菜品
      * @param dishDto
@@ -93,7 +92,7 @@ public class DishController {
     }
 
     /**
-     * 根据id查询菜品信息和口味
+     * 根据id查询菜品信息和口味(回显数据)
      * @param id
      * @return
      */
@@ -185,5 +184,33 @@ public class DishController {
         //如果不存在，查询数据库，将查询到的数据缓存到redis中
         redisTemplate.opsForValue().set(key,dishDtoList,60, TimeUnit.MINUTES);
         return R.success(dishDtoList);
+    }
+
+    /**
+     * 删除菜品
+     * @param ids
+     * @return
+     */
+    @DeleteMapping
+    public R<String> delete(Long[] ids){
+        log.info("ids:{}",ids);
+        dishService.deleteDish(ids);
+        //清理所有菜品的缓存数据(这里不做细化)
+        Set keys = redisTemplate.keys("dish_*");
+         redisTemplate.delete(keys);
+        return R.success("删除成功");
+    }
+
+    /**
+     * 更新菜品的售卖状态（0或1）
+     * @param status
+     * @param ids
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    public R<String> updateStatus(@PathVariable Integer status,Long[] ids){
+        log.info("dish:{}",ids);
+        dishService.updateStatus(status,ids);
+        return R.success("停售成功");
     }
 }
